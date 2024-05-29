@@ -72,10 +72,6 @@ fi
 # Get the selected object name based on the user's input
 selected_object=$(echo "$folder_contents" | sed -n "${object_number}p" | awk '{print $NF}')
 
-# Display more details about the selected folder
-echo "Details of the selected folder:"
-aws s3 ls "s3://$selected_key/$selected_object"
-
 # List objects inside the selected folder
 object_contents=$(aws s3 ls "s3://$selected_key/$selected_object")
 
@@ -93,3 +89,6 @@ echo "Objects inside the selected $selected_object:"
 for i in "${!object_array[@]}"; do
     echo "$((i+1)). ${object_array[$i]}"
 done
+
+# Prompt the user to enter the numbers of the objects to download (e.g., 1,2,3 or all)
+read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or 'all' to download everything): " object_numbers
