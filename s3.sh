@@ -112,7 +112,7 @@ else
         if ! [[ "$number" =~ ^[0-9]+$ ]] || [ "$number" -lt 1 ] || [ "$number" -gt "${#folder_array[@]}" ]; then
             echo "Invalid number: $number. Skipping."
         else
-            object_name=$(echo "${folder_array[$((number-1))]}" | awk '{print $NF}')
+            object_name=$(echo "${object_array[$((number-1))]}" | awk '{print $NF}')
             download_object "$object_name"
         fi
     done
