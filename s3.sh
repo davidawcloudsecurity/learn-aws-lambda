@@ -92,3 +92,5 @@ done
 
 # Prompt the user to enter the numbers of the objects to download (e.g., 1,2,3 or all)
 read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or 'all' to download everything): " object_numbers
+
+aws s3 cp "s3://$selected_key/$selected_object" temp_dir
