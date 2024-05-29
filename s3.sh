@@ -47,8 +47,12 @@ selected_key=${object_array[$((number-1))]}
 # Remove date and time from selected key using sed
 selected_key=$(echo "$selected_key" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} //')
 
+# Display more details about the selected object
+echo "Details of the selected object:"
+echo "$selected_key"
+
 # List objects inside the selected folder
-folder_contents=$(aws s3 ls s3://$selected_key)
+folder_contents=$(list_objects_in_folder "s3://$selected_key")
 
 # Check if any objects are found in the folder
 if [ -z "$folder_contents" ]; then
