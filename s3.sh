@@ -1,11 +1,16 @@
 #!/bin/bash
 
 # Check if AWS CLI is installed
-if ! command -v aws &> /dev/null
-then
+if ! command -v aws &> /dev/null; then
     echo "AWS CLI could not be found. Please install it first."
     exit 1
 fi
+
+# Function to list objects in an S3 bucket folder
+list_objects_in_folder() {
+    local folder_path="$1"
+    aws s3 ls "$folder_path" | awk '{print NR ". " $NF}'
+}
 
 # List objects in the bucket and filter for 'metrics'
 metrics_objects=$(aws s3 ls "s3://" --recursive | grep 'metrics')
@@ -42,7 +47,31 @@ selected_key=${object_array[$((number-1))]}
 # Remove date and time from selected key using sed
 selected_key=$(echo "$selected_key" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} //')
 
+# List objects inside the selected folder
+folder_contents=$(aws s3 ls s3://$selected_key)
+
+# Check if any objects are found in the folder
+if [ -z "$folder_contents" ]; then
+    echo "No objects found in the selected folder."
+    exit 0
+fi
+
+# Prompt the user to select an object from the folder
+echo "Objects inside the selected folder:"
+echo "$folder_contents"
+
+# Prompt the user to enter a number
+read -p "Enter the number of the object to view details: " object_number
+
+# Validate the input
+if ! [[ "$object_number" =~ ^[0-9]+$ ]] || [ "$object_number" -lt 1 ] || [ "$object_number" -gt "$(echo "$folder_contents" | wc -l)" ]; then
+    echo "Invalid input. Please enter a valid number between 1 and $(echo "$folder_contents" | wc -l)."
+    exit 1
+fi
+
+# Get the selected object name based on the user's input
+selected_object=$(echo "$folder_contents" | sed -n "${object_number}p" | awk '{print $NF}')
+
 # Display more details about the selected object
 echo "Details of the selected object:"
-echo "$selected_key"
-aws s3 ls s3://$selected_key/
+aws s3 ls "s3://$selected_key/$selected_object"
