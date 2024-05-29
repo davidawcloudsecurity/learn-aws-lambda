@@ -74,7 +74,7 @@ selected_object=$(echo "$folder_contents" | sed -n "${object_number}p" | awk '{p
 
 # List objects inside the selected folder
 object_contents=$(aws s3 ls "s3://$selected_key/$selected_object")
-echo "F: s3://$selected_key/$selected_object"
+
 # Check if any objects are found in the folder
 if [ -z "$object_contents" ]; then
     echo "No objects found in the selected $selected_object."
@@ -93,5 +93,30 @@ done
 # Prompt the user to enter the numbers of the objects to download (e.g., 1,2,3 or all)
 read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or 'all' to download everything): " object_numbers
 
-aws s3 cp "s3://$selected_key/$selected_object" temp_dir
+# Function to download a single object
+download_object() {
+    local object_path="$1"
+    aws s3 cp "s3://$selected_key/$selected_object/$object_path" temp_dir
+}
+
+# Validate and process the user's input
+if [[ -z "$object_numbers" ]]; then
+    # Download all objects
+    aws s3 cp "s3://$selected_key/$selected_object" temp_dir --recursive
+else
+    # Split the input into an array of numbers
+    IFS=',' read -r -a numbers_array <<< "$object_numbers"
+    
+    # Validate each number and download the corresponding object
+    for number in "${numbers_array[@]}"; do
+        if ! [[ "$number" =~ ^[0-9]+$ ]] || [ "$number" -lt 1 ] || [ "$number" -gt "${#folder_array[@]}" ]; then
+            echo "Invalid number: $number. Skipping."
+        else
+            object_name=$(echo "${folder_array[$((number-1))]}" | awk '{print $NF}')
+            download_object "$object_name"
+        fi
+    done
+fi
 zip -r temp.zip temp_dir
+echo "Download complete."
+
