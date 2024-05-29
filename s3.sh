@@ -25,7 +25,7 @@ fi
 IFS=$'\n' read -rd '' -a object_array <<<"$metrics_objects"
 
 # Display the list of metrics objects with numbers and extract just the keys
-echo "List of buckets containing 'metrics':"
+echo "List of S3 buckets containing 'metrics':"
 object_keys=()
 for i in "${!object_array[@]}"; do
     echo "$((i+1)). ${object_array[$i]}"
@@ -47,21 +47,17 @@ selected_key=${object_array[$((number-1))]}
 # Remove date and time from selected key using sed
 selected_key=$(echo "$selected_key" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} //')
 
-# Display more details about the selected object
-echo "Details of the selected S3 bucket:"
-echo "$selected_key"
-
 # List folders/objects inside the selected bucket
 folder_contents=$(list_objects_in_folder "s3://$selected_key")
 
 # Check if any folders/objects are found in the bucket
 if [ -z "$folder_contents" ]; then
-    echo "No folder/objects found in the selected bucket."
+    echo "Nothing is found in the selected bucket."
     exit 0
 fi
 
 # Prompt the user to select an object from the folder
-echo "Folders/Objects inside the selected bucket:"
+echo "Folders/Objects inside $selected_key"
 echo "$folder_contents"
 
 # Prompt the user to enter a number
