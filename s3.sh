@@ -105,14 +105,14 @@ if [[ -z "$object_numbers" ]]; then
     aws s3 cp "s3://$selected_key/$selected_object" temp_dir --recursive
 else
     # Split the input into an array of numbers
-    IFS=',' read -r -a numbers_array <<< "$object_numbers"
+    IFS=',' read -ra numbers_array <<< "$object_numbers"
     
     # Validate each number and download the corresponding object
     for number in "${numbers_array[@]}"; do
         if ! [[ "$number" =~ ^[0-9]+$ ]] || [ "$number" -lt 1 ] || [ "$number" -gt "${#folder_array[@]}" ]; then
             echo "Invalid number: $number. Skipping."
         else
-            object_name=$(echo "${object_array[$((number-1))]}" | awk '{print $NF}')
+            object_name=$(echo "${folder_array[$((number-1))]}" | awk '{print $NF}')
             download_object "$object_name"
         fi
     done
