@@ -52,7 +52,7 @@ folder_contents=$(list_objects_in_folder "s3://$selected_key")
 
 # Check if any folders/objects are found in the bucket
 if [ -z "$folder_contents" ]; then
-    echo "Nothing is found in the selected bucket."
+    echo "Nothing is found in S3 bucket: $folder_contents."
     exit 0
 fi
 
