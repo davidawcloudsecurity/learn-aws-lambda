@@ -17,7 +17,7 @@ metrics_objects=$(aws s3 ls "s3://" --recursive | grep 'metrics')
 
 # Check if any metrics buckets are found
 if [ -z "$metrics_objects" ]; then
-    echo "No buckets containing 'metrics' found."
+    echo "No S3 buckets containing 'metrics' found."
     exit 1
 fi
 
@@ -52,7 +52,7 @@ folder_contents=$(list_objects_in_folder "s3://$selected_key")
 
 # Check if any folders/objects are found in the bucket
 if [ -z "$folder_contents" ]; then
-    echo "Nothing is found in S3 bucket: $folder_contents."
+    echo "Nothing is found in S3 bucket: $selected_key."
     exit 0
 fi
 
