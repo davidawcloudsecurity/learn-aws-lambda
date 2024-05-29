@@ -6,18 +6,18 @@ if ! command -v aws &> /dev/null; then
     exit 1
 fi
 
-# Function to list objects in an S3 bucket folder
+# Function to list folders in an S3 bucket folder
 list_objects_in_folder() {
     local folder_path="$1"
     aws s3 ls "$folder_path" | awk '{print NR ". " $NF}'
 }
 
-# List objects in the bucket and filter for 'metrics'
+# List the buckets and filter for 'metrics'
 metrics_objects=$(aws s3 ls "s3://" --recursive | grep 'metrics')
 
-# Check if any metrics objects are found
+# Check if any metrics buckets are found
 if [ -z "$metrics_objects" ]; then
-    echo "No objects containing 'metrics' found."
+    echo "No buckets containing 'metrics' found."
     exit 1
 fi
 
@@ -25,7 +25,7 @@ fi
 IFS=$'\n' read -rd '' -a object_array <<<"$metrics_objects"
 
 # Display the list of metrics objects with numbers and extract just the keys
-echo "List of objects containing 'metrics':"
+echo "List of buckets containing 'metrics':"
 object_keys=()
 for i in "${!object_array[@]}"; do
     echo "$((i+1)). ${object_array[$i]}"
@@ -33,7 +33,7 @@ for i in "${!object_array[@]}"; do
 done
 
 # Prompt the user to enter a number
-read -p "Enter the number of the object to view details: " number
+read -p "Enter the number next to the S3 bucket to view more details: " number
 
 # Validate the input
 if ! [[ "$number" =~ ^[0-9]+$ ]] || [ "$number" -lt 1 ] || [ "$number" -gt "${#object_array[@]}" ]; then
@@ -48,24 +48,24 @@ selected_key=${object_array[$((number-1))]}
 selected_key=$(echo "$selected_key" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\} //')
 
 # Display more details about the selected object
-echo "Details of the selected object:"
+echo "Details of the selected S3 bucket:"
 echo "$selected_key"
 
-# List objects inside the selected folder
+# List folders/objects inside the selected bucket
 folder_contents=$(list_objects_in_folder "s3://$selected_key")
 
-# Check if any objects are found in the folder
+# Check if any folders/objects are found in the bucket
 if [ -z "$folder_contents" ]; then
-    echo "No objects found in the selected folder."
+    echo "No folder/objects found in the selected bucket."
     exit 0
 fi
 
 # Prompt the user to select an object from the folder
-echo "Objects inside the selected folder:"
+echo "Folders/Objects inside the selected bucket:"
 echo "$folder_contents"
 
 # Prompt the user to enter a number
-read -p "Enter the number of the object to view details: " object_number
+read -p "Enter the number next to the folder to view details: " object_number
 
 # Validate the input
 if ! [[ "$object_number" =~ ^[0-9]+$ ]] || [ "$object_number" -lt 1 ] || [ "$object_number" -gt "$(echo "$folder_contents" | wc -l)" ]; then
@@ -76,6 +76,6 @@ fi
 # Get the selected object name based on the user's input
 selected_object=$(echo "$folder_contents" | sed -n "${object_number}p" | awk '{print $NF}')
 
-# Display more details about the selected object
-echo "Details of the selected object:"
+# Display more details about the selected folder
+echo "Details of the selected folder:"
 aws s3 ls "s3://$selected_key/$selected_object"
