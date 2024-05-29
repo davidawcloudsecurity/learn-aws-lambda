@@ -74,7 +74,7 @@ selected_object=$(echo "$folder_contents" | sed -n "${object_number}p" | awk '{p
 
 # List objects inside the selected folder
 object_contents=$(aws s3 ls "s3://$selected_key/$selected_object")
-
+echo "F: $object_contents"
 # Check if any objects are found in the folder
 if [ -z "$object_contents" ]; then
     echo "No objects found in the selected $selected_object."
