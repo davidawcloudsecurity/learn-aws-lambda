@@ -94,4 +94,4 @@ done
 read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or 'all' to download everything): " object_numbers
 
 aws s3 cp "s3://$selected_key/$selected_object" temp_dir
-zip temp.zip temp_dir
+zip -r temp.zip temp_dir
