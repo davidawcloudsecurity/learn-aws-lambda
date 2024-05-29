@@ -92,6 +92,7 @@ done
 
 # Prompt the user to enter the numbers of the objects to download (e.g., 1,2,3 or press Enter to download everything)
 read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or press Enter to download everything): " object_numbers
+mkdir temp_dir
 
 # Function to download a single object
 download_object() {
