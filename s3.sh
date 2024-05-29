@@ -75,3 +75,21 @@ selected_object=$(echo "$folder_contents" | sed -n "${object_number}p" | awk '{p
 # Display more details about the selected folder
 echo "Details of the selected folder:"
 aws s3 ls "s3://$selected_key/$selected_object"
+
+# List objects inside the selected folder
+object_contents=$(aws s3 ls "s3://$selected_key/$selected_object")
+
+# Check if any objects are found in the folder
+if [ -z "$object_contents" ]; then
+    echo "No objects found in the selected $selected_object."
+    exit 0
+fi
+
+# Convert the list to an array
+IFS=$'\n' read -rd '' -a object_array <<<"$object_contents"
+
+# Display the list of objects with numbers
+echo "Objects inside the selected $selected_object:"
+for i in "${!object_array[@]}"; do
+    echo "$((i+1)). ${object_array[$i]}"
+done
