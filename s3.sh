@@ -91,7 +91,7 @@ for i in "${!object_array[@]}"; do
 done
 
 # Prompt the user to enter the numbers of the objects to download (e.g., 1,2,3 or all)
-# read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or 'all' to download everything): " object_numbers
+read -p "Enter the numbers of the objects to download (e.g., 1,2,3 or 'all' to download everything): " object_numbers
 
 aws s3 cp "s3://$selected_key/$selected_object" temp_dir
 zip -r temp.zip temp_dir
