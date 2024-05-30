@@ -12,8 +12,16 @@ list_objects_in_folder() {
     aws s3 ls "$folder_path" | awk '{print NR ". " $NF}'
 }
 
+# Prompt the user for input
+read -p "Enter text to grep (default is 'metrics'): " read_input
+
+# Use default value if input is empty
+if [ -z "$read_input" ]; then
+    read_input="metrics"
+fi
+
 # List the buckets and filter for 'metrics'
-metrics_objects=$(aws s3 ls "s3://" --recursive | grep 'metrics')
+metrics_objects=$(aws s3 ls "s3://" --recursive | grep "$read_input")
 
 # Check if any metrics buckets are found
 if [ -z "$metrics_objects" ]; then
