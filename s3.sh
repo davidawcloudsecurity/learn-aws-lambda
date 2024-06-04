@@ -126,5 +126,7 @@ else
         fi
     done
 fi
-zip -r temp.zip temp_dir
+# Prompt the user to for the password
+read -p "Enter the number next to the folder to view details: " pass_key
+zip -p $pass_key -r temp.zip temp_dir
 echo "Download complete."
